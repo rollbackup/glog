@@ -1,6 +1,6 @@
 // Go support for leveled logs, analogous to https://code.google.com/p/google-glog/
 //
-// Copyright 2013 Google Inc. All Rights Reserved.
+// Copyright 2014 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -404,7 +404,7 @@ func init() {
 	flag.Var(&logging.stderrThreshold, "stderrthreshold", "logs at or above this threshold go to stderr")
 	flag.Var(&logging.vmodule, "vmodule", "comma-separated list of pattern=N settings for file-filtered logging")
 	flag.Var(&logging.traceLocation, "log_backtrace_at", "when logging hits line file:N, emit a stack trace")
-	flag.DurationVar(&logging.flushInterval, "flush_interval", 1*time.Second, "Maximum amount of time in between logfile flushes.")
+	flag.DurationVar(&logging.flushInterval, "flush_interval", 1*time.Second, "Maximum amount of time in between logfile flushes")
 
 	// Default stderrThreshold is ERROR.
 	logging.stderrThreshold = errorLog
