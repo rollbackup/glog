@@ -68,7 +68,7 @@
 //			-vmodule=gopher*=3
 //		sets the V level to 3 in all Go files whose names begin "gopher".
 //      -flush_interval=1s
-//              Changes the maximum amount of time inbetween log flushes. Increasing this
+//              Changes the maximum amount of time in between log flushes. Increasing this
 //              value has performance implications.
 package glog
 
@@ -404,8 +404,8 @@ func init() {
 	flag.Var(&logging.stderrThreshold, "stderrthreshold", "logs at or above this threshold go to stderr")
 	flag.Var(&logging.vmodule, "vmodule", "comma-separated list of pattern=N settings for file-filtered logging")
 	flag.Var(&logging.traceLocation, "log_backtrace_at", "when logging hits line file:N, emit a stack trace")
-	flag.DurationVar(&flushInterval, "flush_interval", 1*time.Second, "Maximum amount of time inbetween logfile flushes.")
-	
+	flag.DurationVar(&logging.flushInterval, "flush_interval", 1*time.Second, "Maximum amount of time in between logfile flushes.")
+
 	// Default stderrThreshold is ERROR.
 	logging.stderrThreshold = errorLog
 
@@ -454,8 +454,9 @@ type loggingT struct {
 	traceLocation traceLocation
 	// These flags are modified only under lock, although verbosity may be fetched
 	// safely using atomic.LoadInt32.
-	vmodule   moduleSpec // The state of the -vmodule flag.
-	verbosity Level      // V logging level, the value of the -v flag/
+	vmodule       moduleSpec // The state of the -vmodule flag.
+	verbosity     Level      // V logging level, the value of the -v flag/
+	flushInterval time.Duration
 }
 
 // buffer holds a byte Buffer for reuse. The zero value is ready for use.
@@ -875,11 +876,9 @@ func (l *loggingT) createFiles(sev severity) error {
 	return nil
 }
 
-var flushInterval = 1 * time.Second
-
 // flushDaemon periodically flushes the log file buffers.
 func (l *loggingT) flushDaemon() {
-	for _ = range time.NewTicker(flushInterval).C {
+	for _ = range time.NewTicker(logging.flushInterval).C {
 		l.lockAndFlushAll()
 	}
 }
